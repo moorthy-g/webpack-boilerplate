@@ -174,7 +174,9 @@ module.exports = {
 
   resolve: {
     alias: {
-      js: path.resolve(__dirname, 'src/js')
+      js: path.resolve(__dirname, 'src/js'),
+      style: path.resolve(__dirname, 'src/style'),
+      img: path.resolve(__dirname, 'src/img')
     }
   },
 
