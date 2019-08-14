@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const buildDirectory = path.resolve(__dirname, 'build');
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const dotenv = require('dotenv').config();
@@ -43,7 +43,7 @@ const rules = [
         { loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader },
         {
           loader: 'css-loader',
-          options: { sourceMap: generateCSSSourceMap, minimize: !generateCSSSourceMap }
+          options: { sourceMap: generateCSSSourceMap }
         },
         { loader: 'postcss-loader', options: { sourceMap: generateCSSSourceMap } },
         { loader: 'less-loader', options: { sourceMap: generateCSSSourceMap } }
@@ -115,7 +115,7 @@ const devPlugins = enableHMR
   : new Array();
 
 const buildPlugins = [
-  new CleanWebpackPlugin(buildDirectory),
+  new CleanWebpackPlugin(),
   new MiniCssExtractPlugin({
     filename: 'style/[name].[contenthash:20].css'
   })
