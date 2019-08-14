@@ -10,13 +10,13 @@ const dotenv = require('dotenv').config();
 const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 8000;
 const generateManifest = process.env.GENERATE_MANIFEST === 'true';
-const generateReport = process.env.GENERATE_REPORT === 'true';
 const generateBuildSourceMap = process.env.GENERATE_BUILD_SOURCEMAP === 'true';
+const analyzeBundle = process.env.ANALYZE_BUNDLE === 'true';
 
 const enableHMR = isDevelopment;
 const generateCSSSourceMap = isDevelopment || generateBuildSourceMap;
 const WebpackAssetsManifest = generateManifest && require('webpack-assets-manifest');
-const BundleAnalyzerPlugin = generateReport && require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = analyzeBundle && require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const ClearConsolePlugin = function() {}
 ClearConsolePlugin.prototype.apply = function(compiler) {
@@ -96,12 +96,10 @@ generateManifest &&
     })
   );
 
-generateReport &&
+analyzeBundle &&
   plugins.push(
     new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      reportFilename: path.resolve(__dirname, 'report.html'),
-      openAnalyzer: false
+      openAnalyzer: true
     })
   );
 

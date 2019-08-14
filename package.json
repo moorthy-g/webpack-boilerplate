@@ -9,6 +9,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack-dev-server",
     "build": "cross-env NODE_ENV=production webpack -p --progress",
+    "analyze": "cross-env ANALYZE_BUNDLE=true npm run build",
     "build:server": "npm run build && cross-env NODE_ENV=production serve build -p 8000 -s"
   },
   "devDependencies": {
