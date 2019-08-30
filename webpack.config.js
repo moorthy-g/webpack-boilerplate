@@ -40,7 +40,10 @@ const rules = [
     test: /\.(less|css)$/,
     use: [
         //minimize css in prod build to avoid bundling newline chars in js chunk
-        { loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader },
+        {
+          loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+          options: isDevelopment ? {} : { publicPath: '../' }
+        },
         {
           loader: 'css-loader',
           options: { sourceMap: generateCSSSourceMap }
