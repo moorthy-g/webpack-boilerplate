@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const glob = require('glob');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -37,6 +38,15 @@ const rules = [
     }
   },
   {
+    test: /\.(html)$/,
+    use: {
+      loader: 'html-loader',
+      options: {
+        attrs: [':src', ':data-src', ':data-srcset', ':srcset', ':poster']
+      }
+    }
+  },
+  {
     test: /\.(less|css)$/,
     use: [
         //minimize css in prod build to avoid bundling newline chars in js chunk
@@ -68,24 +78,15 @@ const plugins = [
       process.env.NODE_ENV || 'development'
     )
   }),
-  new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, 'src/index.html'),
-    favicon: path.resolve(__dirname, 'src/img/favicon.png'),
-    minify: isDevelopment
-      ? false
-      : {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeRedundantAttributes: true,
-          useShortDoctype: true,
-          removeEmptyAttributes: true,
-          removeStyleLinkTypeAttributes: true,
-          keepClosingSlash: true,
-          minifyJS: true,
-          minifyCSS: true,
-          minifyURLs: true
-        }
-  }),
+  ...glob.sync(path.resolve(__dirname, 'src/*.html')).map(
+    file =>
+      new HtmlWebpackPlugin({
+        template: file,
+        filename: path.basename(file),
+        favicon: path.resolve(__dirname, 'src/img/favicon.png'),
+        minify: false
+      })
+  ),
   // Prevent importing all moment locales
   // You can remove this if you don't use Moment.js:
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
