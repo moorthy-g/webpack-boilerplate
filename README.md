@@ -10,6 +10,10 @@ An enhanced webpack setup to start with. It has
 
 ## important notes
 
+- Install commitizen globally `npm install -g commitizen`
+- Then, use `git cz` to commit changes
+- Commit messages must follow [angular conventional commit
+  standards](https://github.com/conventional-changelog/commitlint)
 - To ensure code consistency, install `prettier` & `editorconfig` extensions for your editor
 - Then, enable `Format on save` option in editor settings
 - Additionally, Prettier auto formats all files as you commit
