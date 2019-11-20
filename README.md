@@ -6,6 +6,13 @@ An enhanced webpack setup to start with. It has
 - Babel transpiler
 - LESS preprocessor
 - Webpack bundle analyzer
+- Prettier
+
+## important notes
+
+- To ensure code consistency, install `prettier` & `editorconfig` extensions for your editor
+- Then, enable `Format on save` option in editor settings
+- Additionally, Prettier auto formats all files as you commit
 
 ## Commands
 
