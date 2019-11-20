@@ -1,8 +1,11 @@
 const webpack = require('webpack');
 const path = require('path');
+const glob = require('glob');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserJSPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const buildDirectory = path.resolve(__dirname, 'build');
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const dotenv = require('dotenv').config();
@@ -12,19 +15,24 @@ const port = process.env.PORT || 8000;
 const generateManifest = process.env.GENERATE_MANIFEST === 'true';
 const generateBuildSourceMap = process.env.GENERATE_BUILD_SOURCEMAP === 'true';
 const analyzeBundle = process.env.ANALYZE_BUNDLE === 'true';
+const noHTMLExtension = process.env.NO_HTML_EXTENSION_IN_URL === 'true';
 
 const enableHMR = isDevelopment;
 const generateCSSSourceMap = isDevelopment || generateBuildSourceMap;
-const WebpackAssetsManifest = generateManifest && require('webpack-assets-manifest');
-const BundleAnalyzerPlugin = analyzeBundle && require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const WebpackAssetsManifest =
+  generateManifest && require('webpack-assets-manifest');
+const BundleAnalyzerPlugin =
+  analyzeBundle && require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const ClearConsolePlugin = function() {}
+const ClearConsolePlugin = function() {};
 ClearConsolePlugin.prototype.apply = function(compiler) {
-  compiler.plugin('watch-run', function(compilation, callback){
-    process.stdout.write(process.platform === 'win32' ? '\x1Bc' : '\x1B[2J\x1B[3J\x1B[H');
+  compiler.plugin('watch-run', function(compilation, callback) {
+    process.stdout.write(
+      process.platform === 'win32' ? '\x1Bc' : '\x1B[2J\x1B[3J\x1B[H'
+    );
     callback();
-  })
-}
+  });
+};
 
 const rules = [
   {
@@ -37,17 +45,32 @@ const rules = [
     }
   },
   {
+    test: /\.(html)$/,
+    use: {
+      loader: 'html-loader',
+      options: {
+        attrs: [':src', ':data-src', ':data-srcset', ':srcset', ':poster']
+      }
+    }
+  },
+  {
     test: /\.(less|css)$/,
     use: [
-        //minimize css in prod build to avoid bundling newline chars in js chunk
-        { loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader },
-        {
-          loader: 'css-loader',
-          options: { sourceMap: generateCSSSourceMap }
-        },
-        { loader: 'postcss-loader', options: { sourceMap: generateCSSSourceMap } },
-        { loader: 'less-loader', options: { sourceMap: generateCSSSourceMap } }
-      ]
+      //minimize css in prod build to avoid bundling newline chars in js chunk
+      {
+        loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+        options: isDevelopment ? {} : { publicPath: '../' }
+      },
+      {
+        loader: 'css-loader',
+        options: { sourceMap: generateCSSSourceMap }
+      },
+      {
+        loader: 'postcss-loader',
+        options: { sourceMap: generateCSSSourceMap }
+      },
+      { loader: 'less-loader', options: { sourceMap: generateCSSSourceMap } }
+    ]
   },
   {
     test: /\.(jpe?g|png|gif|webp|svg)$/,
@@ -65,24 +88,17 @@ const plugins = [
       process.env.NODE_ENV || 'development'
     )
   }),
-  new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, 'src/index.html'),
-    favicon: path.resolve(__dirname, 'src/img/favicon.png'),
-    minify: isDevelopment
-      ? false
-      : {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeRedundantAttributes: true,
-          useShortDoctype: true,
-          removeEmptyAttributes: true,
-          removeStyleLinkTypeAttributes: true,
-          keepClosingSlash: true,
-          minifyJS: true,
-          minifyCSS: true,
-          minifyURLs: true
-        }
-  }),
+  ...glob.sync(path.resolve(__dirname, 'src/*.html')).map(
+    file =>
+      new HtmlWebpackPlugin({
+        template: file,
+        filename: noHTMLExtension
+          ? path.basename(file).replace(/(?<!index)\.html$/, '/index.html')
+          : path.basename(file),
+        favicon: path.resolve(__dirname, 'src/img/favicon.png'),
+        minify: false
+      })
+  ),
   // Prevent importing all moment locales
   // You can remove this if you don't use Moment.js:
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
@@ -134,9 +150,9 @@ module.exports = {
       : 'js/[name].[chunkhash:20].js',
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
-    path
-      .relative(path.resolve('src'), info.absoluteResourcePath)
-      .replace(/\\/g, '/')
+      path
+        .relative(path.resolve('src'), info.absoluteResourcePath)
+        .replace(/\\/g, '/')
   },
 
   module: {
@@ -144,6 +160,7 @@ module.exports = {
   },
 
   optimization: {
+    minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
     splitChunks: {
       chunks: 'all',
       cacheGroups: {
@@ -163,7 +180,11 @@ module.exports = {
     }
   },
 
-  devtool: isDevelopment ? 'cheap-module-source-map' : generateBuildSourceMap ? 'source-map' : false,
+  devtool: isDevelopment
+    ? 'cheap-module-source-map'
+    : generateBuildSourceMap
+    ? 'source-map'
+    : false,
 
   plugins: isDevelopment
     ? [].concat(plugins, devPlugins)
