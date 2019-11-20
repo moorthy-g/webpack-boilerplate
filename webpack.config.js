@@ -19,16 +19,20 @@ const noHTMLExtension = process.env.NO_HTML_EXTENSION_IN_URL === 'true';
 
 const enableHMR = isDevelopment;
 const generateCSSSourceMap = isDevelopment || generateBuildSourceMap;
-const WebpackAssetsManifest = generateManifest && require('webpack-assets-manifest');
-const BundleAnalyzerPlugin = analyzeBundle && require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const WebpackAssetsManifest =
+  generateManifest && require('webpack-assets-manifest');
+const BundleAnalyzerPlugin =
+  analyzeBundle && require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const ClearConsolePlugin = function() {}
+const ClearConsolePlugin = function() {};
 ClearConsolePlugin.prototype.apply = function(compiler) {
-  compiler.plugin('watch-run', function(compilation, callback){
-    process.stdout.write(process.platform === 'win32' ? '\x1Bc' : '\x1B[2J\x1B[3J\x1B[H');
+  compiler.plugin('watch-run', function(compilation, callback) {
+    process.stdout.write(
+      process.platform === 'win32' ? '\x1Bc' : '\x1B[2J\x1B[3J\x1B[H'
+    );
     callback();
-  })
-}
+  });
+};
 
 const rules = [
   {
@@ -52,18 +56,21 @@ const rules = [
   {
     test: /\.(less|css)$/,
     use: [
-        //minimize css in prod build to avoid bundling newline chars in js chunk
-        {
-          loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
-          options: isDevelopment ? {} : { publicPath: '../' }
-        },
-        {
-          loader: 'css-loader',
-          options: { sourceMap: generateCSSSourceMap }
-        },
-        { loader: 'postcss-loader', options: { sourceMap: generateCSSSourceMap } },
-        { loader: 'less-loader', options: { sourceMap: generateCSSSourceMap } }
-      ]
+      //minimize css in prod build to avoid bundling newline chars in js chunk
+      {
+        loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+        options: isDevelopment ? {} : { publicPath: '../' }
+      },
+      {
+        loader: 'css-loader',
+        options: { sourceMap: generateCSSSourceMap }
+      },
+      {
+        loader: 'postcss-loader',
+        options: { sourceMap: generateCSSSourceMap }
+      },
+      { loader: 'less-loader', options: { sourceMap: generateCSSSourceMap } }
+    ]
   },
   {
     test: /\.(jpe?g|png|gif|webp|svg)$/,
@@ -85,9 +92,9 @@ const plugins = [
     file =>
       new HtmlWebpackPlugin({
         template: file,
-        filename: noHTMLExtension ? 
-                  path.basename(file).replace(/(?<!index)\.html$/, '/index.html') : 
-                  path.basename(file),
+        filename: noHTMLExtension
+          ? path.basename(file).replace(/(?<!index)\.html$/, '/index.html')
+          : path.basename(file),
         favicon: path.resolve(__dirname, 'src/img/favicon.png'),
         minify: false
       })
@@ -143,9 +150,9 @@ module.exports = {
       : 'js/[name].[chunkhash:20].js',
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
-    path
-      .relative(path.resolve('src'), info.absoluteResourcePath)
-      .replace(/\\/g, '/')
+      path
+        .relative(path.resolve('src'), info.absoluteResourcePath)
+        .replace(/\\/g, '/')
   },
 
   module: {
@@ -173,7 +180,11 @@ module.exports = {
     }
   },
 
-  devtool: isDevelopment ? 'cheap-module-source-map' : generateBuildSourceMap ? 'source-map' : false,
+  devtool: isDevelopment
+    ? 'cheap-module-source-map'
+    : generateBuildSourceMap
+    ? 'source-map'
+    : false,
 
   plugins: isDevelopment
     ? [].concat(plugins, devPlugins)
