@@ -74,11 +74,23 @@ const rules = [
   },
   {
     test: /\.(jpe?g|png|gif|webp|svg)$/,
-    loader: 'file-loader?name=img/[name].[hash:8].[ext]'
+    use: {
+      loader: 'file-loader',
+      options: {
+        name: 'img/[name].[hash:8].[ext]',
+        esModule: false
+      }
+    }
   },
   {
     test: /\.(woff|woff2|ttf|eot)$/,
-    loader: 'file-loader?name=font/[name].[hash:8].[ext]'
+    use: {
+      loader: 'file-loader',
+      options: {
+        name: 'img/[name].[hash:8].[ext]',
+        esModule: false
+      }
+    }
   }
 ];
 
