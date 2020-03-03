@@ -15,7 +15,6 @@ const port = process.env.PORT || 8000;
 const generateManifest = process.env.GENERATE_MANIFEST === 'true';
 const generateBuildSourceMap = process.env.GENERATE_BUILD_SOURCEMAP === 'true';
 const analyzeBundle = process.env.ANALYZE_BUNDLE === 'true';
-const noHTMLExtension = process.env.NO_HTML_EXTENSION_IN_URL === 'true';
 
 const enableHMR = isDevelopment;
 const generateCSSSourceMap = isDevelopment || generateBuildSourceMap;
@@ -104,9 +103,7 @@ const plugins = [
     file =>
       new HtmlWebpackPlugin({
         template: file,
-        filename: noHTMLExtension
-          ? path.basename(file).replace(/(?<!index)\.html$/, '/index.html')
-          : path.basename(file),
+        filename: path.basename(file),
         favicon: path.resolve(__dirname, 'src/img/favicon.png'),
         minify: false
       })
@@ -218,7 +215,16 @@ module.exports = {
     hot: enableHMR,
     compress: true,
     stats: 'errors-only',
-    overlay: true
+    overlay: true,
+    /* serve html routes without html extension */
+    historyApiFallback: {
+      rewrites: [
+        {
+          from: /.*/,
+          to: context => `${context.parsedUrl.pathname}.html`
+        }
+      ]
+    }
   },
 
   stats: 'minimal',

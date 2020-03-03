@@ -17,6 +17,7 @@ An enhanced webpack setup to start with. It has
 - To ensure code consistency, install `prettier` & `editorconfig` extensions for your editor
 - Then, enable `Format on save` option in editor settings
 - Additionally, Prettier auto formats all files as you commit
+- HTML files are served without extension
 
 ## Commands
 
@@ -31,5 +32,3 @@ An enhanced webpack setup to start with. It has
 - `PORT` - Development port
 - `GENERATE_MANIFEST` - Whether to generate build manifest
 - `GENERATE_BUILD_SOURCEMAP` - Whether to generate source map in production build
-- `NO_HTML_EXTENSION_IN_URL` - Whether to have `.html` extension in url.\
-  If true, puts every html files but `index.html` into `/{htmlfilename}/index.html`)
