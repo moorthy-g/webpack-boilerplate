@@ -5,10 +5,10 @@
   "license": "WTFPL",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack serve",
+    "dev": "cross-env NODE_ENV=development webpack serve",
+    "start": "npm run build && cross-env NODE_ENV=production serve build -p 8000",
     "build": "cross-env NODE_ENV=production webpack build --progress",
     "analyze": "cross-env ANALYZE_BUNDLE=true npm run build",
-    "build:server": "npm run build && cross-env NODE_ENV=production serve build -p 8000",
     "prepare": "husky install"
   },
   "devDependencies": {
