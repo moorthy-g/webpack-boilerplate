@@ -3,7 +3,6 @@ const path = require('path');
 const glob = require('glob');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const buildDirectory = path.resolve(__dirname, 'build');
@@ -23,16 +22,6 @@ const WebpackAssetsManifest =
 const BundleAnalyzerPlugin =
   analyzeBundle && require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const ClearConsolePlugin = function() {};
-ClearConsolePlugin.prototype.apply = function(compiler) {
-  compiler.plugin('watch-run', function(compilation, callback) {
-    process.stdout.write(
-      process.platform === 'win32' ? '\x1Bc' : '\x1B[2J\x1B[3J\x1B[H'
-    );
-    callback();
-  });
-};
-
 const rules = [
   {
     test: /\.js$/,
@@ -44,16 +33,27 @@ const rules = [
     }
   },
   {
-    test: /\.(html)$/,
-    use: {
-      loader: 'html-loader',
-      options: {
-        attrs: [':src', ':data-src', ':data-srcset', ':srcset', ':poster']
-      }
+    test: /\.(jpe?g|png|gif|webp|svg)$/,
+    type: 'asset/resource',
+    generator: {
+      filename: 'assets/[name].[contenthash:8].[ext]'
     }
   },
   {
-    test: /\.(less|css)$/,
+    test: /\.(woff|woff2|ttf|eot)$/,
+    type: 'asset/source',
+    generator: {
+      filename: 'assets/[name].[contenthash:8].[ext]'
+    }
+  },
+  {
+    test: /\.(html)$/,
+    use: {
+      loader: 'html-loader'
+    }
+  },
+  {
+    test: /\.(scss|sass|css)$/,
     use: [
       //minimize css in prod build to avoid bundling newline chars in js chunk
       {
@@ -68,28 +68,8 @@ const rules = [
         loader: 'postcss-loader',
         options: { sourceMap: generateCSSSourceMap }
       },
-      { loader: 'less-loader', options: { sourceMap: generateCSSSourceMap } }
+      { loader: 'sass-loader', options: { sourceMap: generateCSSSourceMap } }
     ]
-  },
-  {
-    test: /\.(jpe?g|png|gif|webp|svg)$/,
-    use: {
-      loader: 'file-loader',
-      options: {
-        name: 'img/[name].[hash:8].[ext]',
-        esModule: false
-      }
-    }
-  },
-  {
-    test: /\.(woff|woff2|ttf|eot)$/,
-    use: {
-      loader: 'file-loader',
-      options: {
-        name: 'img/[name].[hash:8].[ext]',
-        esModule: false
-      }
-    }
   }
 ];
 
@@ -100,7 +80,7 @@ const plugins = [
     )
   }),
   ...glob.sync(path.resolve(__dirname, 'src/*.html')).map(
-    file =>
+    (file) =>
       new HtmlWebpackPlugin({
         template: file,
         filename: path.basename(file),
@@ -131,14 +111,11 @@ analyzeBundle &&
 const devPlugins = enableHMR
   ? [
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NamedModulesPlugin(),
-      new webpack.NoEmitOnErrorsPlugin(),
-      new ClearConsolePlugin()
+      new webpack.NoEmitOnErrorsPlugin()
     ]
   : new Array();
 
 const buildPlugins = [
-  new CleanWebpackPlugin(),
   new MiniCssExtractPlugin({
     filename: 'style/[name].[contenthash:20].css'
   })
@@ -158,7 +135,7 @@ module.exports = {
       ? 'js/[name].[hash:20].js'
       : 'js/[name].[chunkhash:20].js',
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
+    devtoolModuleFilenameTemplate: (info) =>
       path
         .relative(path.resolve('src'), info.absoluteResourcePath)
         .replace(/\\/g, '/')
@@ -221,7 +198,7 @@ module.exports = {
       rewrites: [
         {
           from: /.*/,
-          to: context => `${context.parsedUrl.pathname}.html`
+          to: (context) => `${context.parsedUrl.pathname}.html`
         }
       ]
     }
