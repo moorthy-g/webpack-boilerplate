@@ -1,7 +1,7 @@
 {
   "name": "static-webpack-boilterplate",
-  "version": "1.1.0",
-  "description": "A simple webpack boilterplate with webpack-dev-server, babel & less",
+  "version": "2.0.0",
+  "description": "A simple webpack boilterplate with to create HTML/JS/SASS applications",
   "license": "WTFPL",
   "private": true,
   "scripts": {
