@@ -1,4 +1,3 @@
-import 'js/app-module.js';
 import 'normalize.css';
 import '../style/main.scss';
 
