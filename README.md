@@ -1,14 +1,17 @@
 # Static Webpack Boilerplate
 
-An enhanced webpack setup to start with. It has
+An enhanced webpack setup to start with.
+Use this to create HTML/JS/SASS applications
 
-- Webpack dev server ( HMR enabled )
+- Webpack 5
 - Babel transpiler
-- LESS preprocessor
+- SASS & Autoprefix (PostCSS)
 - Webpack bundle analyzer
 - Prettier
+- Commitizen to enforce [conventional commit](https://www.conventionalcommits.org) message standards
+- Husky for commit linting
 
-## important notes
+## Important notes
 
 - Install commitizen globally `npm install -g commitizen`
 - Then, use `git cz` to commit changes
@@ -21,10 +24,10 @@ An enhanced webpack setup to start with. It has
 
 ## Commands
 
-- `yarn start` Starts the webpack dev server in port 8000 ( its a default port )
+- `yarn dev` Starts the webpack dev server in port 8000 ( its a default port )
+- `yarn start` Runs webpack production build & Serves it using a simple http server in port 8000
 - `yarn build` Runs webpack production build.
 - `yarn analyze` Generates webpack bundle report
-- `yarn build:server` Runs webpack production build & Serves it using a simple http server in port 8000
 
 ## Env variables
 

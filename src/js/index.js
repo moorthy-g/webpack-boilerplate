@@ -1,7 +1,5 @@
-import 'js/polyfills';
-import 'js/app-module.js';
 import 'normalize.css';
-import '../style/main.less';
+import '../style/main.scss';
 
 if (module.hot) {
   module.hot.accept();
