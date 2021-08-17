@@ -36,15 +36,15 @@
     "postcss-loader": "^6.1.1",
     "prettier": "^2.3.2",
     "pretty-quick": "^3.1.1",
-    "sass": "^1.37.5",
+    "sass": "^1.38.0",
     "sass-loader": "^12.1.0",
     "serve": "^12.0.0",
     "style-loader": "^3.2.1",
     "terser-webpack-plugin": "^5.1.4",
-    "webpack": "^5.49.0",
+    "webpack": "^5.50.0",
     "webpack-assets-manifest": "^5.0.6",
     "webpack-bundle-analyzer": "^4.4.2",
-    "webpack-cli": "^4.7.2",
+    "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^3.11.2"
   },
   "config": {
