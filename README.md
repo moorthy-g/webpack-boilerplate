@@ -1,14 +1,17 @@
 # Static Webpack Boilerplate
 
-An enhanced webpack setup to start with. It has
+An enhanced webpack setup to start with.
+Use this to create HTML/JS/SASS applications
 
-- Webpack dev server ( HMR enabled )
+- Webpack 5
 - Babel transpiler
-- SASS preprocessor
+- SASS & Autoprefix (PostCSS)
 - Webpack bundle analyzer
 - Prettier
+- Commitizen to enforce [conventional commit](https://www.conventionalcommits.org) message standards
+- Husky for commit linting
 
-## important notes
+## Important notes
 
 - Install commitizen globally `npm install -g commitizen`
 - Then, use `git cz` to commit changes
